@@ -10,14 +10,12 @@ import glob
 app = Flask(__name__)
 CORS(app)
 
-# Global variables for machine learning model
 model = None
 trained = False
 
 MODEL_PATH = './model/random_forest_model.pkl'
 UPLOAD_FOLDER = './data'
 
-# Upload endpoint
 @app.route('/upload', methods=['POST'])
 def upload_image():
     if 'file' not in request.files:
@@ -34,7 +32,6 @@ def upload_image():
     
     return jsonify({'message': 'File uploaded successfully'}), 200
 
-# Train endpoint
 @app.route('/train', methods=['POST'])
 def train_model():
     global model, trained
@@ -50,7 +47,6 @@ def train_model():
     model = RandomForestClassifier()
     model.fit(X_train, y_train)
 
-    # Ensure the model directory exists
     if not os.path.exists(os.path.dirname(MODEL_PATH)):
         os.makedirs(os.path.dirname(MODEL_PATH))
 
@@ -59,7 +55,6 @@ def train_model():
     
     return jsonify({'message': 'Model trained successfully'}), 200
 
-# Predict endpoint
 @app.route('/predict', methods=['POST'])
 def predict_image():
     global model, trained
@@ -80,14 +75,44 @@ def predict_image():
     
     return jsonify({'prediction': 'cancerous' if prediction == 1 else 'noncancerous'}), 200
 
-# Load model if exists
+@app.route('/test_benign', methods=['GET'])
+def test_benign():
+    return test_images_in_folder(os.path.join(UPLOAD_FOLDER, 'benign'))
+
+@app.route('/test_malignant', methods=['GET'])
+def test_malignant():
+    return test_images_in_folder(os.path.join(UPLOAD_FOLDER, 'malignant'))
+
+def test_images_in_folder(folder_path):
+    global model, trained
+
+    if not trained:
+        return jsonify({'error': 'Model not trained yet'}), 400
+
+    if not os.path.exists(folder_path):
+        return jsonify({'error': f'Folder {folder_path} does not exist'}), 400
+
+    images = []
+    filenames = glob.glob(os.path.join(folder_path, '*.jpg'))
+
+    if not filenames:
+        return jsonify({'error': 'No images found in folder'}), 400
+
+    for file in filenames:
+        img = preprocess_image(file)
+        images.append(img)
+
+    predictions = model.predict(images)
+    results = {os.path.basename(filenames[i]): 'cancerous' if pred == 1 else 'noncancerous' for i, pred in enumerate(predictions)}
+    
+    return jsonify({'message': 'Images tested successfully', 'predictions': results})
+
 def load_model():
     global model, trained
     if os.path.exists(MODEL_PATH):
         model = joblib.load(MODEL_PATH)
         trained = True
 
-# Helper function to load images and labels
 def load_images_and_labels(folder_path):
     images = []
     labels = []
@@ -112,7 +137,6 @@ def load_images_and_labels(folder_path):
     else:
         return None, None
 
-# Helper function to preprocess images
 def preprocess_image(file):
     img = Image.open(file)
     img = img.resize((224, 224))

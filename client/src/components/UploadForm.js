@@ -13,15 +13,15 @@ const UploadForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!file) {
       setMessage('Please select a file');
       return;
     }
-  
+
     const formData = new FormData();
     formData.append('file', file);
-  
+
     try {
       setLoading(true);
       setMessage('');
@@ -42,7 +42,7 @@ const UploadForm = () => {
         // Trigger training if not already trained
         const trainResponse = await axios.post('http://localhost:5000/train');
         console.log('Train Response:', trainResponse.data);
-        
+
         if (trainResponse.status === 200) {
           const predictResponse = await axios.post('http://localhost:5000/predict', formData, {
             headers: {
@@ -63,6 +63,42 @@ const UploadForm = () => {
     }
   };
 
+  const handleTestBenign = async () => {
+    try {
+      setLoading(true);
+      setMessage('');
+      setPrediction('');
+
+      const testResponse = await axios.get('http://localhost:5000/test_benign');
+      console.log('Test Benign Response:', testResponse.data);
+      setMessage(testResponse.data.message);
+      setPrediction(testResponse.data.prediction);
+    } catch (error) {
+      console.error('Error in testing benign images:', error);
+      setMessage('Error testing benign images');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTestMalignant = async () => {
+    try {
+      setLoading(true);
+      setMessage('');
+      setPrediction('');
+
+      const testResponse = await axios.get('http://localhost:5000/test_malignant');
+      console.log('Test Malignant Response:', testResponse.data);
+      setMessage(testResponse.data.message);
+      setPrediction(testResponse.data.prediction);
+    } catch (error) {
+      console.error('Error in testing malignant images:', error);
+      setMessage('Error testing malignant images');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="upload-form">
       <h2>Upload Image</h2>
@@ -70,6 +106,8 @@ const UploadForm = () => {
         <input type="file" onChange={handleFileChange} />
         <button type="submit">Upload</button>
       </form>
+      <button onClick={handleTestBenign}>Test Benign</button>
+      <button onClick={handleTestMalignant}>Test Malignant</button>
       {loading && <p>Loading...</p>}
       {message && <p>{message}</p>}
       {prediction && <p>Prediction: {prediction}</p>}
