@@ -1,0 +1,58 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Users\sri45\AppData\Roaming\npm\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.6.0
+2 info using node@v18.18.2
+3 silly config:load:file:C:\Users\sri45\AppData\Roaming\npm\node_modules\npm\npmrc
+4 silly config:load:file:C:\Users\sri45\OneDrive\Desktop\DermDetect\DermDetect\.npmrc
+5 silly config:load:file:C:\Users\sri45\.npmrc
+6 silly config:load:file:C:\Users\sri45\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install axios
+8 verbose argv "install" "axios"
+9 verbose logfile logs-max:10 dir:C:\Users\sri45\OneDrive\Desktop\DermDetect\DermDetect\.npm-cache\_logs\2024-07-04T02_05_03_208Z-
+10 verbose logfile C:\Users\sri45\OneDrive\Desktop\DermDetect\DermDetect\.npm-cache\_logs\2024-07-04T02_05_03_208Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly idealTree buildDeps
+13 silly fetch manifest axios@*
+14 http fetch GET 200 https://registry.npmjs.org/axios 275ms (cache miss)
+15 silly placeDep ROOT axios@1.7.2 OK for:  want: *
+16 silly fetch manifest follow-redirects@^1.15.6
+17 silly fetch manifest form-data@^4.0.0
+18 silly fetch manifest proxy-from-env@^1.1.0
+19 http fetch GET 200 https://registry.npmjs.org/proxy-from-env 70ms (cache miss)
+20 http fetch GET 200 https://registry.npmjs.org/follow-redirects 152ms (cache revalidated)
+21 http fetch GET 200 https://registry.npmjs.org/form-data 166ms (cache revalidated)
+22 silly placeDep ROOT follow-redirects@1.15.6 OK for: axios@1.7.2 want: ^1.15.6
+23 silly placeDep ROOT form-data@4.0.0 OK for: axios@1.7.2 want: ^4.0.0
+24 silly placeDep ROOT proxy-from-env@1.1.0 OK for: axios@1.7.2 want: ^1.1.0
+25 silly fetch manifest asynckit@^0.4.0
+26 silly fetch manifest combined-stream@^1.0.8
+27 silly fetch manifest mime-types@^2.1.12
+28 http fetch GET 200 https://registry.npmjs.org/asynckit 76ms (cache revalidated)
+29 http fetch GET 200 https://registry.npmjs.org/mime-types 78ms (cache revalidated)
+30 http fetch GET 200 https://registry.npmjs.org/combined-stream 84ms (cache revalidated)
+31 silly placeDep ROOT asynckit@0.4.0 OK for: form-data@4.0.0 want: ^0.4.0
+32 silly placeDep ROOT combined-stream@1.0.8 OK for: form-data@4.0.0 want: ^1.0.8
+33 silly placeDep ROOT mime-types@2.1.35 OK for: form-data@4.0.0 want: ^2.1.12
+34 silly fetch manifest delayed-stream@~1.0.0
+35 silly fetch manifest mime-db@1.52.0
+36 http fetch GET 200 https://registry.npmjs.org/delayed-stream 69ms (cache revalidated)
+37 http fetch GET 200 https://registry.npmjs.org/mime-db 85ms (cache revalidated)
+38 silly placeDep ROOT delayed-stream@1.0.0 OK for: combined-stream@1.0.8 want: ~1.0.0
+39 silly placeDep ROOT mime-db@1.52.0 OK for: mime-types@2.1.35 want: 1.52.0
+40 silly reify moves {}
+41 silly tarball no local data for proxy-from-env@https://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.1.0.tgz. Extracting by manifest.
+42 silly tarball no local data for form-data@https://registry.npmjs.org/form-data/-/form-data-4.0.0.tgz. Extracting by manifest.
+43 silly tarball no local data for axios@https://registry.npmjs.org/axios/-/axios-1.7.2.tgz. Extracting by manifest.
+44 http fetch GET 200 https://registry.npmjs.org/form-data/-/form-data-4.0.0.tgz 104ms (cache miss)
+45 http fetch GET 200 https://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.1.0.tgz 110ms (cache miss)
+46 http fetch GET 200 https://registry.npmjs.org/axios/-/axios-1.7.2.tgz 485ms (cache miss)
+47 silly ADD node_modules/mime-db
+48 silly ADD node_modules/delayed-stream
+49 silly ADD node_modules/mime-types
+50 silly ADD node_modules/combined-stream
+51 silly ADD node_modules/asynckit
+52 silly ADD node_modules/proxy-from-env
+53 silly ADD node_modules/form-data
+54 silly ADD node_modules/follow-redirects
+55 silly ADD node_modules/axios
+56 verbose exit 0
+57 info ok

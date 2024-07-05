@@ -1,24 +1,25 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 import os
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+import joblib
 from PIL import Image
 import glob
 
 app = Flask(__name__)
+CORS(app)
 
 # Global variables for machine learning model
 model = None
-X_train = None
-y_train = None
+trained = False
+
+MODEL_PATH = './model/random_forest_model.pkl'
+UPLOAD_FOLDER = './data'
 
 # Upload endpoint
 @app.route('/upload', methods=['POST'])
 def upload_image():
-    global X_train, y_train
-    
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
 
@@ -26,80 +27,99 @@ def upload_image():
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
 
-    # Save the file to a designated folder
-    upload_folder = './data'  # Assuming your data folder is named 'data'
-    if not os.path.exists(upload_folder):
-        os.makedirs(upload_folder)
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
 
-    file.save(os.path.join(upload_folder, file.filename))
-    
-    # Process the uploaded file for training
-    X_train, y_train = load_images_and_labels(upload_folder)
+    file.save(os.path.join(UPLOAD_FOLDER, file.filename))
     
     return jsonify({'message': 'File uploaded successfully'}), 200
 
 # Train endpoint
 @app.route('/train', methods=['POST'])
 def train_model():
-    global model, X_train, y_train
+    global model, trained
+
+    if trained:
+        return jsonify({'message': 'Model already trained'}), 200
+
+    X_train, y_train = load_images_and_labels(UPLOAD_FOLDER)
     
     if X_train is None or y_train is None:
-        return jsonify({'error': 'No data uploaded yet'}), 400
-    
-    # Train a simple classifier (Random Forest as an example)
+        return jsonify({'error': 'No data to train on'}), 400
+
     model = RandomForestClassifier()
     model.fit(X_train, y_train)
+
+    # Ensure the model directory exists
+    if not os.path.exists(os.path.dirname(MODEL_PATH)):
+        os.makedirs(os.path.dirname(MODEL_PATH))
+
+    joblib.dump(model, MODEL_PATH)
+    trained = True
     
     return jsonify({'message': 'Model trained successfully'}), 200
 
 # Predict endpoint
 @app.route('/predict', methods=['POST'])
 def predict_image():
-    global model
-    
-    if model is None:
+    global model, trained
+
+    if not trained:
         return jsonify({'error': 'Model not trained yet'}), 400
-    
+
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
     file = request.files['file']
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
-    
-    # Load and preprocess the uploaded image
+
     image = preprocess_image(file)
     
-    # Make prediction
     prediction = model.predict([image])[0]
     
     return jsonify({'prediction': 'cancerous' if prediction == 1 else 'noncancerous'}), 200
+
+# Load model if exists
+def load_model():
+    global model, trained
+    if os.path.exists(MODEL_PATH):
+        model = joblib.load(MODEL_PATH)
+        trained = True
 
 # Helper function to load images and labels
 def load_images_and_labels(folder_path):
     images = []
     labels = []
     
-    cancerous_files = glob.glob(os.path.join(folder_path, 'cancerous', '*.jpg'))
-    noncancerous_files = glob.glob(os.path.join(folder_path, 'noncancerous', '*.jpg'))
+    benign_files = glob.glob(os.path.join(folder_path, 'benign', '*.jpg'))
+    malignant_files = glob.glob(os.path.join(folder_path, 'malignant', '*.jpg'))
     
-    for file in cancerous_files:
+    for file in benign_files:
         img = preprocess_image(file)
         images.append(img)
-        labels.append(1)  # Cancerous
+        labels.append(0)
     
-    for file in noncancerous_files:
+    for file in malignant_files:
         img = preprocess_image(file)
         images.append(img)
-        labels.append(0)  # Noncancerous
+        labels.append(1)
     
-    return np.array(images), np.array(labels)
+    if images and labels:
+        images = np.array(images)
+        labels = np.array(labels)
+        return images, labels
+    else:
+        return None, None
 
 # Helper function to preprocess images
 def preprocess_image(file):
     img = Image.open(file)
-    img = img.resize((224, 224))  # Resize image if needed
+    img = img.resize((224, 224))
     img = np.array(img)
-    img = img / 255.0  # Normalize pixel values
-    return img.flatten()  # Flatten image to vector
+    img = img / 255.0
+    return img.flatten()
 
 if __name__ == '__main__':
+    load_model()
     app.run(debug=True)
-
