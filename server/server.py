@@ -103,7 +103,7 @@ def test_images_in_folder(folder_path):
         images.append(img)
 
     predictions = model.predict(images)
-    results = {os.path.basename(filenames[i]): 'cancerous' if pred == 1 else 'noncancerous' for i, pred in enumerate(predictions)}
+    results = {os.path.basename(filenames[i]): 'Cancerous' if pred == 1 else 'Noncancerous' for i, pred in enumerate(predictions)}
     
     return jsonify({'message': 'Images tested successfully', 'predictions': results})
 
