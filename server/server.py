@@ -72,8 +72,10 @@ def predict_image():
     image = preprocess_image(file)
     
     prediction = model.predict([image])[0]
+
+    os.remove(os.path.join(UPLOAD_FOLDER, file.filename))
     
-    return jsonify({'prediction': 'cancerous' if prediction == 1 else 'noncancerous'}), 200
+    return jsonify({'prediction': 'Cancerous' if prediction == 1 else 'Noncancerous'}), 200
 
 @app.route('/test_benign', methods=['GET'])
 def test_benign():

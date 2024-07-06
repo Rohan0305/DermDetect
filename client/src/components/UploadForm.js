@@ -37,9 +37,7 @@ const UploadForm = () => {
       console.log('Upload Response:', uploadResponse.data);
       setMessage(uploadResponse.data.message);
 
-      // If upload successful, trigger training and request prediction
       if (uploadResponse.status === 200) {
-        // Trigger training if not already trained
         const trainResponse = await axios.post('http://localhost:5000/train');
         console.log('Train Response:', trainResponse.data);
 
